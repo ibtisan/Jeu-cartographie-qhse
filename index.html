@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Cartographie Bmcaf - Jeu</title>
+<style>
+  /* Quand la carte est cliquée, cacher la bulle */
+.carte:active .tooltip {
+  visibility: hidden;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  font-family: "Poppins", sans-serif;
+  background-color: #000;
+}
+body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.fond {
+  position: relative;
+  width: 800px;
+  height: 450px;
+  background-image: url('https://i.postimg.cc/nLGwy0NR/Capture-d-ecran-2025-09-20-215248.png');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+}
+.zone-cartes {
+  position: absolute;
+  left: -46px;
+  top: 10%;
+  display: grid;
+  grid-template-rows: repeat(10, 36px);
+  grid-auto-flow: column;
+  gap: 2px;
+  width: 125px;
+  overflow: visible;
+}
+.carte {
+  width: 23px;
+  height: 34px;
+  background-color: #fff9c4;
+  color: #222;
+  border-radius: 5px;
+  border: 2px solid #888;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1em;
+  cursor: grab;
+  user-select: none;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+  position: relative;
+}
+.carte:hover {
+  transform: scale(1.3);
+  z-index: 999; 
+}
+.carte .tooltip {
+  visibility: hidden;
+  width: 250px;
+  background-color: #000; /* fond noir */
+  color: #fff;
+  text-align: left;
+  border-radius: 5px;
+  padding: 6px 8px;
+  position: absolute;
+  z-index: 9999;
+  left: 105%; /* toujours à droite de la carte */
+  top: 20px; /* descend un peu pour ne pas être coupé en haut */
+  font-size: 0.8em;
+  line-height: 1.3em;
+  white-space: normal;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+  transition: opacity 0.2s ease-in-out;
+  opacity: 0;
+}
+
+/* Apparition au survol */
+.carte:hover .tooltip {
+  visibility: visible;
+  opacity: 1;
+}
+
+/* Disparition au clic */
+.carte:active .tooltip {
+  visibility: hidden;
+  opacity: 0;
+}
+
+.zone {
+  position: absolute;
+  width: 23px;
+  height: 34px;
+  border: 2px dashed transparent;
+  transition: border-color 0.3s ease;
+  background-color: transparent; } /*rgba(255,0,0,0.2);
+}*/
+/* ------------------- Positions des 46 zones ------------------- */
+.zone5 { top: 17.3%; left: 31.3%; } 
+.zone13 { top: 17.3%; left: 35.99%; } 
+.zone4 { top: 17.3%; left: 40.6%; } 
+.zone21 { top: 17.3%; left: 53%; } 
+.zone23 { top: 17.3%; left: 57.7%; } 
+.zone26 { top: 17.3%; left: 62.35%; } 
+.zone1 { top: 17.3%; left: 67%; } 
+.zone20 { top: 35.7%; left: 22.8%; } 
+.zone19 { top: 35.7%; left: 27.4%; } 
+.zone25 { top: 35.7%; left: 31.9%; } 
+.zone27 { top: 35.7%; left: 36.5%; } 
+.zone17 { top: 35.7%; left: 41%; } 
+.zone15 { top: 35.7%; left: 45.5%; } 
+.zone11 { top: 35.7%; left: 61%; } 
+.zone28 { top: 35.7%; left: 65.4%; } 
+.zone7 { top: 35.7%; left: 69.9%; } 
+.zone6 { top: 35.7%; left: 74.4%; } 
+.zone33 { top: 3.3%; left: 42%; } 
+.zone35 { top: 3.3%; left: 46.5%; } 
+.zone41 { top: 3.3%; left: 51.2%; } 
+.zone46 { top: 3.3%; left: 55.8%; } 
+.zone12 { top: 56%; left: 21.87%; } 
+.zone14 { top: 56%; left: 26.2%; } 
+.zone24 { top: 56%; left: 30.7%; } 
+.zone8 { top: 56%; left: 40.17%; } 
+.zone9 { top: 56%; left: 44.56%; } 
+.zone18 { top: 56%; left: 48.9%; } 
+.zone10 { top: 56%; left: 53.2%; } 
+.zone16 { top: 56%; left: 57.6%; } 
+.zone22 { top: 56%; left: 61.9%; } 
+.zone2 { top: 56%; left: 71.5%; } 
+.zone3 { top: 56%; left: 75.5%; } 
+.zone42 { top: 81.2%; left: 16.6%; } 
+.zone43 { top: 81.2%; left: 21.3%; } 
+.zone45 { top: 81.2%; left: 26%; } 
+.zone44 { top: 81.2%; left: 32.4%; } 
+.zone38 { top: 81.2%; left: 36.5%; } 
+.zone39 { top: 81.2%; left: 40.6%; } 
+.zone36 { top: 81.2%; left: 45.3%; } 
+.zone30 { top: 81.2%; left: 51.3%; } 
+.zone32 { top: 81.2%; left: 55.5%; } 
+.zone40 { top: 81.2%; left: 59.6%; } 
+.zone31 { top: 81.2%; left: 63.7%; } 
+.zone29 { top: 81.2%; left: 70.2%; } 
+.zone34 { top: 81.2%; left: 75.6%; } 
+.zone37 { top: 81.2%; left: 80.8%; }
+  /* Quand la carte est cliquée, cacher la bulle */
+.carte:active .tooltip {
+  visibility: hidden;
+}
+/* Cartes 1 à 28 : jaune très clair (comme avant) */
+#carte1, #carte2, #carte3, #carte4, #carte5, #carte6, #carte7, #carte8, #carte9, 
+#carte10, #carte11, #carte12, #carte13, #carte14, #carte15, #carte16, #carte17, 
+#carte18, #carte19, #carte20, #carte21, #carte22, #carte23, #carte24, #carte25, 
+#carte26, #carte27, #carte28 {
+  background-color: #fff9c4; /* jaune clair crème comme l'image */
+}
+
+/* Cartes 29 à 46 : jaune plus soutenu */
+#carte29, #carte30, #carte31, #carte32, #carte33, #carte34, #carte35, #carte36, 
+#carte37, #carte38, #carte39, #carte40, #carte41, #carte42, #carte43, #carte44, 
+#carte45, #carte46 {
+  background-color: #fbc02d; /* jaune foncé harmonieux */
+}
+
+</style>
+</head>
+<body>
+
+<div class="fond">
+
+  <!-- Score -->
+  <div id="score" style="position:absolute; top:10px; right:10px; color:white; font-size:20px;">Score: 0</div>
+
+ <!-- Nom du joueur -->
+<div id="nom-joueur" style="position:absolute; top:10px; left:10px; color:white; font-size:16px;">
+  Nom joueur:
+  <input type="text" id="playerName" placeholder="Entrez votre nom" 
+         style="padding:3px; border-radius:5px; border:none; font-size:14px;">
+</div>
+
+  <div class="zone-cartes">
+    <!-- Cartes 1 à 46 avec bulles -->
+    <!-- Cartes 1 à 46 avec bulles --> <div class="carte" draggable="true" id="carte1">1 <span class="tooltip">1-LANCER : Lancer la première fabrication validée la qualité du produit</span> </div> <div class="carte" draggable="true" id="carte2">2 <span class="tooltip">2-PREPARER : Sortir du stock les produits commandés</span> </div> <div class="carte" draggable="true" id="carte3">3 <span class="tooltip">3-TRANSPORTER : Livrer les produits chez les clients</span> </div> <div class="carte" draggable="true" id="carte4">4 <span class="tooltip">4-PROMOUVOIR : Soutenir les ventes en faisant connaitre le produit</span> </div> <div class="carte" draggable="true" id="carte5">5 <span class="tooltip">5-ETUDIER : Connaitre le comportement des consommateurs, la concurrence, la réglementation</span> </div> <div class="carte" draggable="true" id="carte6">6 <span class="tooltip">6-SUIVRE : Vérifier que le fournisseur respecte la demande, l’évaluer et lui fixer des axes de progrès</span> </div> <div class="carte" draggable="true" id="carte7">7 <span class="tooltip">7-CONTRACTEUR : Passer un accord technique et financier</span> </div> <div class="carte" draggable="true" id="carte8">8 <span class="tooltip">8-MOULER : Verser de la résine liquide et de la fibre dans un moule pour obtenir une forme après solidification</span> </div> <div class="carte" draggable="true" id="carte9">9 <span class="tooltip">9-DEMOULER : Démouler la pièce du moule après séchage</span> </div> <div class="carte" draggable="true" id="carte10">10 <span class="tooltip">10-CONTROLER : Vérifier que le produit est conforme aux exigences du client</span> </div> <div class="carte" draggable="true" id="carte11">11 <span class="tooltip">11-SELECTIONNER : Choisir le fournisseur capable de répondre au besoin de l’entreprise</span> </div> <div class="carte" draggable="true" id="carte12">12 <span class="tooltip">12-PLANIFIER : Fixer les quantités à approvisionner et à produire</span> </div> <div class="carte" draggable="true" id="carte13">13 <span class="tooltip">13-DEFINIR : Choisir les caractéristiques du produit en fonction du profil du consommateur</span> </div> <div class="carte" draggable="true" id="carte14">14 <span class="tooltip">14-APPROVISIONNER : Faire livrer les matières en fonction des quantités à produire</span> </div> <div class="carte" draggable="true" id="carte15">15 <span class="tooltip">15-ASSURER LE SERVICE : Assurer le service après-vente pour satisfaire le consommateur</span> </div> <div class="carte" draggable="true" id="carte16">16 <span class="tooltip">16-CONDITIONNER : Emballer la pièce finie afin de la présenter et de la protéger</span> </div> <div class="carte" draggable="true" id="carte17">17 <span class="tooltip">17-FACTURER : Adresser les factures au client</span> </div> <div class="carte" draggable="true" id="carte18">18 <span class="tooltip">18-USINER : Usiner la pièce démoulée conformément au plan d’usinage</span> </div> <div class="carte" draggable="true" id="carte19">19 <span class="tooltip">19-PREVOIR : Prévoir les ventes à partir des enquêtes de marché et de l’historique</span> </div> <div class="carte" draggable="true" id="carte20">20 <span class="tooltip">20-PROSPECTER : Chercher de nouveaux clients potentiels</span> </div> <div class="carte" draggable="true" id="carte21">21 <span class="tooltip">21-INNOVER : Chercher des idées nouvelles et choisir celle qui fera l’objet d’un développement</span> </div> <div class="carte" draggable="true" id="carte22">22 <span class="tooltip">22-STOCKER : Stocker les produits avant livraison</span> </div> <div class="carte" draggable="true" id="carte23">23 <span class="tooltip">23-DEVELOPPER : Faire un prototype pour tester sa qualité et définir la méthode</span> </div> <div class="carte" draggable="true" id="carte24">24 <span class="tooltip">24-STOCKER : Stocker les matières avant utilisation</span> </div> <div class="carte" draggable="true" id="carte25">25 <span class="tooltip">25-VENDRE : Présenter les produits, négocier les tarifs et prendre les commandes</span> </div> <div class="carte" draggable="true" id="carte26">26 <span class="tooltip">26-INDUSTRIALISER : Définir la méthode de fabrication et assurer la mise en œuvre industrielle</span> </div> <div class="carte" draggable="true" id="carte27">27 <span class="tooltip">27-TRAITER LES COMMANDES : Enregistrer les commandes et les suivre jusqu’à la livraison</span> </div> <div class="carte" draggable="true" id="carte28">28 <span class="tooltip">28-NEGOCIER : Obtenir du fournisseur le meilleur tarif pour la qualité requise</span> </div> <div class="carte" draggable="true" id="carte29">29 <span class="tooltip">29-PREPARER LES BUDGETS : Prévoir les dépenses de chaque service de l’entreprise</span> </div> <div class="carte" draggable="true" id="carte30">30 <span class="tooltip">30-RECRUTER : Embaucher le personnel pour les besoins de l’entreprise</span> </div> <div class="carte" draggable="true" id="carte31">31 <span class="tooltip">31-AMELIORER LES CONDITIONS DE TRAVAIL : Faire en sorte que le travail s’effectue dans de bonnes conditions</span> </div> <div class="carte" draggable="true" id="carte32">32 <span class="tooltip">32-FORMER : Donner à chacun les connaissances nécessaires à son travail</span> </div> <div class="carte" draggable="true" id="carte33">33 <span class="tooltip">33-DEFINIR : Définir les stratégies de l’entreprise</span> </div> <div class="carte" draggable="true" id="carte34">34 <span class="tooltip">34-PAYER : Payer les fournisseurs et faire payer les clients</span> </div> <div class="carte" draggable="true" id="carte35">35 <span class="tooltip">35-DEPLOYER : Obtenir que chaque service contribue aux stratégies de l’entreprise</span> </div> <div class="carte" draggable="true" id="carte36">36 <span class="tooltip">36-AMELIORER : Engager des actions de progrès pour atteindre les objectifs de l’entreprise</span> </div> <div class="carte" draggable="true" id="carte37">37 <span class="tooltip">37-TENIR LES COMPTES : Faire les opérations comptables, le compte de résultat et le bilan de l’entreprise</span> </div> <div class="carte" draggable="true" id="carte38">38 <span class="tooltip">38-PROTEGER L’ENVIRONNEMENT : Faire en sorte que le site ne dégrade pas l’environnement</span> </div> <div class="carte" draggable="true" id="carte39">39 <span class="tooltip">39-ASSURER LA SECURITE : Faire en sorte que le travail soit sans danger</span> </div> <div class="carte" draggable="true" id="carte40">40 <span class="tooltip">40-REMUNERER : Calculer et payer les salaires</span> </div> <div class="carte" draggable="true" id="carte41">41 <span class="tooltip">41-COMMUNIQUER : Diffuser à tous des informations sur la vie de l’entreprise</span> </div> <div class="carte" draggable="true" id="carte42">42 <span class="tooltip">42-PREVENIR : Entretenir les équipements pour assurer leur bon fonctionnement futur</span> </div> <div class="carte" draggable="true" id="carte43">43 <span class="tooltip">43-REPARER : Intervenir pour que le matériel puisse fonctionner à nouveau</span> </div> <div class="carte" draggable="true" id="carte44">44 <span class="tooltip">44-ASSURER LA QUALITE : Définir les normes et procédures et promouvoir le système qualité</span> </div> <div class="carte" draggable="true" id="carte45">45 <span class="tooltip">45-DEVELOPPER LES EQUIPTS : Développer ou acheter les équipements pour la fabrication</span> </div> <div class="carte" draggable="true" id="carte46">46 <span class="tooltip">46-CONTROLER : Mesurer les performances de l’entreprise</span> </div>
+    <!-- (Ici tu peux garder toutes tes div de carte comme tu les as dans ton code original) -->
+  </div>
+
+  <!-- Zones -->
+  <div class="zone zone1" data-id="carte1"></div>
+  <div class="zone zone2" data-id="carte2"></div>
+  <div class="zone zone3" data-id="carte3"></div>
+  <div class="zone zone4" data-id="carte4"></div>
+  <div class="zone zone5" data-id="carte5"></div>
+  <div class="zone zone6" data-id="carte6"></div>
+  <div class="zone zone7" data-id="carte7"></div>
+  <div class="zone zone8" data-id="carte8"></div>
+  <div class="zone zone9" data-id="carte9"></div>
+  <div class="zone zone10" data-id="carte10"></div>
+  <div class="zone zone11" data-id="carte11"></div>
+  <div class="zone zone12" data-id="carte12"></div>
+  <div class="zone zone13" data-id="carte13"></div>
+  <div class="zone zone14" data-id="carte14"></div>
+  <div class="zone zone15" data-id="carte15"></div>
+  <div class="zone zone16" data-id="carte16"></div>
+  <div class="zone zone17" data-id="carte17"></div>
+  <div class="zone zone18" data-id="carte18"></div>
+  <div class="zone zone19" data-id="carte19"></div>
+  <div class="zone zone20" data-id="carte20"></div>
+  <div class="zone zone21" data-id="carte21"></div>
+  <div class="zone zone22" data-id="carte22"></div>
+  <div class="zone zone23" data-id="carte23"></div>
+  <div class="zone zone24" data-id="carte24"></div>
+  <div class="zone zone25" data-id="carte25"></div>
+  <div class="zone zone26" data-id="carte26"></div>
+  <div class="zone zone27" data-id="carte27"></div>
+  <div class="zone zone28" data-id="carte28"></div>
+  <div class="zone zone29" data-id="carte29"></div>
+  <div class="zone zone30" data-id="carte30"></div>
+  <div class="zone zone31" data-id="carte31"></div>
+  <div class="zone zone32" data-id="carte32"></div>
+  <div class="zone zone33" data-id="carte33"></div>
+  <div class="zone zone34" data-id="carte34"></div>
+  <div class="zone zone35" data-id="carte35"></div>
+  <div class="zone zone36" data-id="carte36"></div>
+  <div class="zone zone37" data-id="carte37"></div>
+  <div class="zone zone38" data-id="carte38"></div>
+  <div class="zone zone39" data-id="carte39"></div>
+  <div class="zone zone40" data-id="carte40"></div>
+  <div class="zone zone41" data-id="carte41"></div>
+  <div class="zone zone42" data-id="carte42"></div>
+  <div class="zone zone43" data-id="carte43"></div>
+  <div class="zone zone44" data-id="carte44"></div>
+  <div class="zone zone45" data-id="carte45"></div>
+  <div class="zone zone46" data-id="carte46"></div>
+</div>
+
+<script>
+
+const cartes = document.querySelectorAll('.carte');
+const zones = document.querySelectorAll('.zone');
+let draggedCarte = null;
+let score = 0;
+const scoreDisplay = document.getElementById('score');
+
+// 🔹 Création du message flottant
+const messageDiv = document.createElement("div");
+messageDiv.id = "message";
+messageDiv.style.position = "absolute";
+messageDiv.style.top = "10px";
+messageDiv.style.left = "50%";
+messageDiv.style.transform = "translateX(-50%)";
+messageDiv.style.padding = "10px 20px";
+messageDiv.style.borderRadius = "8px";
+messageDiv.style.fontWeight = "bold";
+messageDiv.style.fontSize = "18px";
+messageDiv.style.display = "none";
+messageDiv.style.zIndex = "1000";
+document.body.appendChild(messageDiv);
+
+// 🔹 Gestion du drag & drop
+cartes.forEach(carte => {
+  carte.addEventListener('dragstart', dragStart);
+  carte.addEventListener('click', () => {
+    const tooltip = carte.querySelector('.tooltip');
+    if (tooltip) tooltip.style.visibility = 'hidden';
+  });
+});
+
+zones.forEach(zone => {
+  zone.addEventListener('dragover', dragOver);
+  zone.addEventListener('drop', drop);
+});
+
+function dragStart(e) {
+  draggedCarte = this;
+}
+
+function dragOver(e) {
+  e.preventDefault();
+}
+
+function drop(e) {
+  e.preventDefault();
+  const zoneId = this.dataset.id;
+
+  if (draggedCarte.id === zoneId) {
+    this.appendChild(draggedCarte);
+    draggedCarte.style.position = "absolute";
+    draggedCarte.style.top = "0px";
+    draggedCarte.style.left = "0px";
+    draggedCarte.setAttribute("draggable", "false");
+
+    score++;
+    scoreDisplay.textContent = "Score: " + score;
+    showMessage("✅ Bonne carte placée !", true);
+
+    // Optionnel : message final quand tout est juste
+   if (score === cartes.length) {
+  const playerName = document.getElementById("playerName").value.trim() || "Joueur";
+  showMessage(`🎉 Bravo ${playerName} ! Vous avez tout placé correctement ! 🎉`, true, true);
+}
+
+  } else {
+    showMessage("❌ Mauvais emplacement !", false);
+  }
+}
+
+// 🔹 Fonction d’affichage du message temporaire
+let permanentMessageShown = false; // drapeau pour savoir si le message final est affiché
+
+function showMessage(texte, succes, permanent = false) {
+  if (permanentMessageShown) return; // ne plus toucher le message final
+
+  messageDiv.textContent = texte;
+  messageDiv.style.display = "block";
+  messageDiv.style.backgroundColor = succes ? "rgba(0,128,0,0.9)" : "rgba(200,0,0,0.9)";
+  messageDiv.style.color = "white";
+
+  if (permanent) {
+    permanentMessageShown = true; // on bloque tout changement après
+    messageDiv.style.fontSize = "24px";
+    messageDiv.style.top = "50%";
+    messageDiv.style.left = "50%";
+    messageDiv.style.transform = "translate(-50%, -50%)";
+    messageDiv.style.padding = "20px 40px";
+    messageDiv.style.border = "3px solid gold";
+    messageDiv.style.textAlign = "center";
+    messageDiv.style.zIndex = "2000";
+  } else {
+    setTimeout(() => {
+      if (!permanentMessageShown) messageDiv.style.display = "none";
+    }, 1500);
+  }
+}
+
+
+</script>
+</body>
+</html>
+
+
+
+ 
