@@ -108,7 +108,7 @@ body {
   border: 2px dashed transparent;
   transition: border-color 0.3s ease;
   background-color: transparent; } /*rgba(255,0,0,0.2);
-}
+}*/
 /* ------------------- Positions des 46 zones ------------------- */
 .zone5 { top: 17.3%; left: 33.3%; } 
 .zone13 { top: 17.3%; left: 37.4%; } 
@@ -214,7 +214,29 @@ body {
     height: auto;
     overflow: hidden;
   }
+/*
+  /* Neutraliser le scaling pour le popup instructions */
+/*  #popup-mobile {
+    transform: none !important;   /* ignore le scale du body */
+  /*  position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    z-index: 9999 !important;
+  }*/
+
+/*  #popup-mobile > div {
+    transform: none !important;
+    width: 85% !important;
+    max-width: 400px !important;
+  }
 }
+*/
+
 
   
 </style>
@@ -399,10 +421,11 @@ function showMessage(texte, succes, permanent = false) {
 </script>
 
 <script>
-// ---- POPUP MOBILE UNIQUEMENT ----
+// ---- POPUP MOBILE INDEPENDANT DU BODY ----
 window.addEventListener("load", () => {
-  if (window.innerWidth <= 600) {  // téléphone uniquement
-    
+  if (window.innerWidth <= 600) {  // Mobile réel uniquement
+
+    // Création du popup overlay
     const popup = document.createElement("div");
     popup.style.position = "fixed";
     popup.style.top = "0";
@@ -413,22 +436,27 @@ window.addEventListener("load", () => {
     popup.style.display = "flex";
     popup.style.alignItems = "center";
     popup.style.justifyContent = "center";
-    popup.style.zIndex = "3000";
+    popup.style.zIndex = "9999";
+    popup.style.transform = "none"; // Ignore le scaling du body
 
+    // Contenu du popup
     const box = document.createElement("div");
     box.style.background = "white";
-    box.style.padding = "22px 28px";
+    box.style.padding = "25px 30px";
     box.style.borderRadius = "12px";
     box.style.textAlign = "center";
-    box.style.maxWidth = "320px";
+    box.style.width = "85%";
+    box.style.maxWidth = "400px";
     box.style.fontSize = "16px";
     box.style.lineHeight = "1.5";
     box.style.fontFamily = "Poppins, sans-serif";
     box.style.boxShadow = "0 4px 15px rgba(0,0,0,0.25)";
+    box.style.transform = "none"; // aussi pour le contenu
 
     box.innerHTML = `
-      ⚠️ <strong> Mode Mobile</strong><br><br>
-      Ce jeu est optimisé pour un ordinateur.<br>Veuillez utiliser un PC pour jouer correctement<br><br>
+      ⚠️ <strong>Mode Mobile</strong><br><br>
+      Ce jeu est optimisé pour un ordinateur.<br>
+      Veuillez utiliser un PC pour jouer correctement.<br><br>
       <button id="closePopup"
         style="
           padding:10px 20px;
@@ -443,13 +471,17 @@ window.addEventListener("load", () => {
     `;
 
     popup.appendChild(box);
-    document.body.appendChild(popup);
 
+    // ATTENTION : ajouter au documentElement pour éviter le scaling
+    document.documentElement.appendChild(popup);
+
+    // Fermeture
     document.getElementById("closePopup").onclick = () => {
       popup.remove();
     };
   }
 });
+
 </script>
 
 <div id="popup-instructions" 
@@ -495,8 +527,42 @@ function ouvrirInstructions() {
 function fermerInstructions() {
   document.getElementById("popup-instructions").style.display = "none";
 }
+  
+
+
 </script>
   
+  <div id="resize-warning" style="
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    background: rgba(255,165,0,0.9);
+    color: #000;
+    padding: 6px 12px;
+    border-radius: 5px;
+    font-weight: bold;
+    font-family: Poppins, sans-serif;
+    display: none;
+    z-index: 9999;
+">
+  Agrandissez votre fenêtre pour voir tout le jeu !
+</div>
+
+<script>
+function checkWindowSize() {
+    const warning = document.getElementById("resize-warning");
+    if(window.innerWidth < 950) { // largeur minimale du jeu
+        warning.style.display = "block";
+    } else {
+        warning.style.display = "none";
+    }
+}
+
+// Vérifie au chargement et à chaque redimensionnement
+window.addEventListener("load", checkWindowSize);
+window.addEventListener("resize", checkWindowSize);
+</script>
+
 </body>
 </html>
 
