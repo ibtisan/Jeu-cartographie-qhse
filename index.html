@@ -108,7 +108,7 @@ body {
   border: 2px dashed transparent;
   transition: border-color 0.3s ease;
   background-color: transparent; } /*rgba(255,0,0,0.2);
-}*/
+}
 /* ------------------- Positions des 46 zones ------------------- */
 .zone5 { top: 17.3%; left: 33.3%; } 
 .zone13 { top: 17.3%; left: 37.4%; } 
@@ -180,6 +180,43 @@ text-align: center; }
   background-color: #fbc02d; /* jaune foncé harmonieux */
 }
 
+  
+/* Styles généraux */
+body {  
+  /* tes styles desktop ici */
+}
+
+/* Autres classes et styles du jeu */
+.container { }
+.zone { }
+.card { }
+/* etc. */
+
+  
+  /* --- Mode mobile uniquement (DOIT ÊTRE EN BAS) --- */ /*@media screen and (max-width: 900px) { 
+  body { 
+    transform: scale(0.45); 
+    transform-origin: top left; 
+    width: 220%; 
+    height: auto; 
+    overflow: hidden;
+  }
+} */
+  
+ 
+  
+/* Mobile réel uniquement (téléphones/tablettes, pas PC réduit) */
+@media (max-width: 900px) and (pointer: coarse) {
+  body {
+    transform: scale(0.45);
+    transform-origin: top left;
+    width: 220%;
+    height: auto;
+    overflow: hidden;
+  }
+}
+
+  
 </style>
 </head>
 <body>
