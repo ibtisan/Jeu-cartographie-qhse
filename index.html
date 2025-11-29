@@ -108,7 +108,7 @@ body {
   border: 2px dashed transparent;
   transition: border-color 0.3s ease;
   background-color: transparent; } /*rgba(255,0,0,0.2);
-}*/
+}/*
 /* ------------------- Positions des 46 zones ------------------- */
 .zone5 { top: 17.3%; left: 33.3%; } 
 .zone13 { top: 17.3%; left: 37.4%; } 
@@ -208,7 +208,7 @@ body {
 /* Mobile réel uniquement (téléphones/tablettes, pas PC réduit) */
 @media (max-width: 900px) and (pointer: coarse) {
   body {
-    transform: scale(0.45);
+    transform: scale(0.39);
     transform-origin: top left;
     width: 220%;
     height: auto;
@@ -494,7 +494,7 @@ window.addEventListener("load", () => {
 
     <p style="font-weight:bold; text-align:center; margin-bottom:15px;">
       BMCAF – RMQHSE<br>
-      Exercice Pratique : Cartographie des activités des processus
+      Exercice pratique : Cartographie des activités des processus
     </p>
     <h2 style="margin-top:0; text-align:center;">📘 Instructions du jeu</h2>
 
@@ -505,7 +505,7 @@ window.addEventListener("load", () => {
       🔹 Le score augmente à chaque bonne réponse.<br><br>
         🔹 Les cartes des processus de Management et de Support sont en <strong>orange</strong>, tandis que celles des autres processus sont en <strong>jaune</strong>.<br><br>
 
-      🔹 Le but est de placer correctement les 46 activités des processus.
+      🔹 Le but est de placer correctement les 46 activités.
     </p>
 
     <div style="text-align:center; margin-top:20px;">
@@ -548,20 +548,34 @@ function fermerInstructions() {
   Agrandissez votre fenêtre pour voir tout le jeu !
 </div>
 
+
+
 <script>
 function checkWindowSize() {
+
     const warning = document.getElementById("resize-warning");
-    if(window.innerWidth < 950) { // largeur minimale du jeu
+
+    // 🔥 Détection téléphone / tablette → on cache toujours le message
+    const isMobile = window.matchMedia("(pointer: coarse)").matches;
+    if (isMobile) {
+        warning.style.display = "none";
+        return;
+    }
+
+    // 🖥️ PC → afficher seulement si fenêtre trop petite
+    if (window.innerWidth < 950) {
         warning.style.display = "block";
     } else {
         warning.style.display = "none";
     }
 }
 
-// Vérifie au chargement et à chaque redimensionnement
+// Vérifier au chargement + en cas de redimensionnement
 window.addEventListener("load", checkWindowSize);
 window.addEventListener("resize", checkWindowSize);
 </script>
+
+
 
 </body>
 </html>
