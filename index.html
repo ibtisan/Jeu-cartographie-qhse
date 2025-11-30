@@ -423,7 +423,9 @@ function showMessage(texte, succes, permanent = false) {
 <script>
 // ---- POPUP MOBILE INDEPENDANT DU BODY ----
 window.addEventListener("load", () => {
-  if (window.innerWidth <= 600) {  // Mobile réel uniquement
+  // Vérifie largeur et pointeur tactile
+  const isMobileDevice = window.matchMedia("(pointer: coarse)").matches;
+  if (window.innerWidth <= 900 && isMobileDevice) {  // Mobile réel uniquement
 
     // Création du popup overlay
     const popup = document.createElement("div");
@@ -472,7 +474,7 @@ window.addEventListener("load", () => {
 
     popup.appendChild(box);
 
-    // ATTENTION : ajouter au documentElement pour éviter le scaling
+    // Ajouter au documentElement pour éviter le scaling
     document.documentElement.appendChild(popup);
 
     // Fermeture
@@ -481,8 +483,8 @@ window.addEventListener("load", () => {
     };
   }
 });
-
 </script>
+
 
 <div id="popup-instructions" 
      style="display:none; position:fixed; top:0; left:0; width:100%; height:100%;
